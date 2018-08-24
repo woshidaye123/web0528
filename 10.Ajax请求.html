@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!--这是react的核心库  -->
+    <script src="./build/react.js"></script>
+    <!--操作dom的核心库  -->
+    <script src="./build/react-dom.js"></script>
+    <!--babel编译的核心库,在浏览器中是无法识别react中的jsx语法糖，采用babel实现jsx语法转化es5语法。  -->
+    <script src="./build/browser.min.js"></script>
+    <script src="https://unpkg.com/jquery@3.3.1/dist/jquery.js"></script>
+</head>
+<body>
+  <div id="app"></div>
+  <!--在script上标记type类型是必不可少的！表示在js代码支持babel编译。  -->
+  <script type="text/babel">
+    class Parent extends React.Component{
+      constructor(props){
+        super(props)
+        this.state={
+          login:'',
+          id:'',
+          arr:[]  
+        }  
+      }
+      componentDidMount(){
+        this.req = $.get(this.props.sources,function(res){
+          var result=res;
+          var random = Math.floor(Math.random()*10)
+          this.setState({
+            login:result[0].owner.login,
+            id: result[0].owner.id,
+            res1:result[random].owner.repos_url 
+          })
+        }.bind(this))
+      }
+      componentWillUnmount() {
+        this.req.abort();
+      }
+      render(){
+        return (
+        <div>
+          <h1>{this.state.login}</h1>
+          <p>{this.state.id}</p>
+          <ol>
+           {this.state.arr.map((item,index)=>{
+             return (<li key={index}>当前的created_at：{item.created_at}</li>)  
+           })}
+          </ol>
+          <h1>{this.state.res1}</h1>    
+        </div>)  
+      }  
+    }
+    Parent.defaultProps={
+      sources:'https://api.github.com/users/octocat/gists'  
+    }
+    ReactDOM.render(//将模板转化为html语法
+     <Parent></Parent>,
+     document.getElementById('app')  
+    )    
+
+  </script>  
+</body>
+</html>

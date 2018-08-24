@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        a{background: green;
+            width: 100%;
+            height: 44px;
+            line-height: 44px;
+            display: block;
+            text-align: center;
+            color: #fff;
+            text-decoration: none;
+            margin-bottom: 10px;}
+    </style>
+    <script src="../build/react.js"></script>
+    <script src="../build/react-dom.js"></script>
+    <script src="../build/browser.min.js"></script>
+</head>
+<body>
+<div id="container"></div>
+<script type="text/babel">
+
+
+class LifeCycle extends React.Component {
+constructor(props) {
+super(props);
+console.log("Initial render");
+console.log("constructor");
+this.state = {str: "hello"};
+}
+
+componentWillMount() {
+console.log("componentWillMount");
+}
+
+componentDidMount() {
+console.log("componentDidMount");
+}
+
+componentWillReceiveProps(nextProps) {
+console.log("componentWillReceiveProps");
+}
+
+shouldComponentUpdate() {
+console.log("shouldComponentUpdate");
+return true;        // 记得要返回true
+}
+
+componentWillUpdate() {
+console.log("componentWillUpdate");
+}
+
+componentDidUpdate() {
+console.log("componentDidUpdate");
+}
+
+componentWillUnmount() {
+console.log("componentWillUnmount");
+}
+
+setTheState() {
+let s = "hello";
+if (this.state.str === s) {
+s = "HELLO";
+}
+this.setState({
+str: s
+});
+}
+
+forceItUpdate() {
+console.log('forceItUpdate')    
+this.forceUpdate();
+}
+
+render() {
+console.log("虚拟dom渲染：render");
+return(
+<div>
+    <span>{"Props:"}<h2>{parseInt(this.props.num)}</h2></span>
+    <br />
+    <span>{"State:"}<h2>{this.state.str}</h2></span>
+</div>
+);
+}
+}
+
+class Container  extends React.Component {
+constructor(props) {
+super(props);
+this.state = {
+num: Math.random() * 100
+};
+}
+
+propsChange() {
+console.log('PropsChange:render')    
+this.setState({
+num: Math.random() * 100
+});
+
+}
+
+setLifeCycleState() {
+this.refs.rLifeCycle.setTheState();
+}
+
+forceLifeCycleUpdate() {
+this.refs.rLifeCycle.forceItUpdate();
+}
+
+unmountLifeCycle() {
+console.log('unmountLifeCycle')    
+// 这里卸载父组件也会导致卸载子组件
+ReactDOM.unmountComponentAtNode(document.getElementById("container"))
+}
+
+parentForceUpdate() {
+this.forceUpdate();
+}
+
+render() {
+return (
+<div>
+    <a href="javascript:;" className="weui_btn weui_btn_primary" onClick={this.propsChange.bind(this)}>propsChange</a>
+    <a href="javascript:;" className="weui_btn weui_btn_primary" onClick={this.setLifeCycleState.bind(this)}>setState</a>
+    <a href="javascript:;" className="weui_btn weui_btn_primary" onClick={this.forceLifeCycleUpdate.bind(this)}>forceUpdate</a>
+    <a href="javascript:;" className="weui_btn weui_btn_primary" onClick={this.unmountLifeCycle.bind(this)}>unmount</a>
+    <a href="javascript:;" className="weui_btn weui_btn_primary" onClick={this.parentForceUpdate.bind(this)}>parentForceUpdateWithoutChange</a>
+    <LifeCycle ref="rLifeCycle" num={this.state.num}></LifeCycle>
+</div>
+);
+}
+}
+//实例挂载
+var app = ReactDOM.render(
+<Container></Container>,
+document.getElementById('container')
+);
+</script>
+</body>
+</html>
